@@ -4,7 +4,7 @@
 
 :root {
   --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
+  --background-start-rgb: 210, 215, 218;
   --background-end-rgb: 255, 255, 255;
 }
 
@@ -30,4 +30,37 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+.container {
+  @apply max-w-[1320px] mx-auto px-4 min-[1320px]:px-0;
+}
+
+.ant-form-item-label {
+  @apply pb-1 !important ;
+}
+.ant-form-item {
+  @apply mb-4 !important ;
+}
+.ant-input:hover {
+  @apply border-white outline-none !important ;
+} 
+
+.otp-modal .ant-modal-close {
+  @apply hidden !important ;
+}
+
+.ant-input:hover {
+  @apply border-white outline-none outline-0 !important ;
+}
+
+.ant-input:focus {
+  @apply border-white outline-none !important ;
+}
+
+.fij {
+  @apply flex justify-between items-center;
+}
+.fi {
+  @apply flex items-center;
 }
