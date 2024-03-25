@@ -30,7 +30,10 @@ const LoginPage = () => {
                                 body: JSON.stringify(values),
                                 credentials: 'include'
                             }).then((res : any) => res.json()).then((data : any) => {
+                                console.log(data)
                                 if(data.status === 201) {
+                                    localStorage.setItem("accessToken", data?.
+                                    data?.accessToken)
                                     refetch()
                                     message.success(data.message)
                                     router.push("/")

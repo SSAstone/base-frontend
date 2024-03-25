@@ -4,10 +4,11 @@ import { Dropdown } from 'antd'
 import { MenuProps } from 'antd/lib'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import React, { useContext } from 'react'
+import React from 'react'
 
 const Navbar = () => {
-    const { user, logout, data } = useAuth()
+    const { logout, data } = useAuth()
+    console.log("🚀 ~ Navbar ~ data:", data)
     const router = useRouter()
 
     const items: MenuProps['items'] = [
@@ -54,6 +55,9 @@ const Navbar = () => {
                 <Link href="/login">Login</Link>
                 {
                     data?.data?.role === "user_service" && <Link href="/services">Get Started</Link>
+                }
+                {
+                    data?.data?.role === "admin" && <Link href="/dashboard">Dashboard</Link>
                 }
                 <button className='cursor-pointer' onClick={() => {
                     router.push("/login")

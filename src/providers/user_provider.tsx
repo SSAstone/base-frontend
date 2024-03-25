@@ -1,22 +1,19 @@
 "use client"
 import { UserContext } from '@/context/user_context';
-import instance from '@/hooks/fetch';
-import useFetchGet from '@/hooks/get_fetch';
-import { useQuery } from '@tanstack/react-query';
+import ApiFetcher from '@/hooks/use_fetch';
+import useFetch from '@/hooks/use_fetch';
 
-import React, { useState } from 'react';
+import React from 'react';
 
 const UserProvider = ({ children }: { children: React.ReactNode }) => {
-    const { data, isLoading, refetch }: any = useQuery({
-        queryKey: ['user'],
-        queryFn: async () => {
-            const res = await instance.get('/user/me');
-            return res.data;
-        }
-    })
+
+    const {Get} = new ApiFetcher();
+
+    const { data, isLoading, refetch } = Get('/user/me');
     
     const logout = () => {
         document.cookie = "accessToken=;";
+        localStorage.removeItem("accessToken");
     }
 
     const value = { data, isLoading, logout, refetch };
