@@ -33,7 +33,7 @@ class ApiFetcher {
                 options && { ...options }
 
             },
-            
+
             onError: (error: any) => {
                 console.log("🚀 ~ useFetch ~ Post ~ error:", error?.response?.data?.data?.issues.map((err: any) => err.message))
                 error?.response?.data?.data?.issues ? message.error(error?.response?.data?.data?.issues?.map((err: any) => err.message)) : message.error(error?.message);
@@ -63,6 +63,36 @@ class ApiFetcher {
                 }}>Yes</button>
             });
         });
+    }
+
+    formPost(url: string, options?: any) {
+        const mutation = useMutation({
+            mutationFn: async (event: any) => {
+                try {
+
+                    let formData = new FormData();
+                    for (let key in event) {
+                        formData.append(key, event[key]);
+                    }
+
+                    const response = await instance.post(url, formData);
+                    return response.data;
+                } catch (error) {
+                    throw error;
+                }
+            },
+            onSuccess: (data) => {
+                options && (options?.message ? message.success(options?.message)
+                    : message.success(data.message));
+            },
+            onError: (error: any) => {
+                options && (options?.message ? message.error(options?.message)
+                    : message.error(error?.response?.data?.data?.issues?.map((err: any) => err.message)));
+            }
+        });
+        const { isSuccess, isPending, isError, error } = mutation;
+
+        return { mutation, isSuccess, isPending, isError, error };
     }
 
     generateFetcher(url: string) {

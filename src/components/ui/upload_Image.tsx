@@ -1,5 +1,4 @@
 import { Form, Upload, Modal } from "antd";
-import axios from "axios";
 import { useState } from "react";
 
 //File Input Component
@@ -57,6 +56,7 @@ const Input = ({ value, onChange, listType, max, noWebp, pdf }: any) => {
         accept={`image/png, image/gif, image/jpeg, ${!noWebp && "image/webp"}${
           pdf ? ", application/pdf" : ""
         }`}
+        
         listType={listType}
         onPreview={handlePreview}
         fileList={value || []}
