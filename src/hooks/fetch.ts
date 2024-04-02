@@ -25,18 +25,10 @@ instance.interceptors.response.use(
     },
     (error: AxiosError) => {
         if (error.response) {
-            console.log("Response error status:", error.response.status);
-            console.log("Response error data:", error.response.data);
             return Promise.reject(error);
-            
         } else if (error.request) {
             return Promise.reject(error);
-            console.log("Request error:", error.request);
-        } else {
-            console.log("Request setup error:", error.message);
-            return Promise.reject(error);
         }
-        
         return Promise.reject(error);
     }
 );

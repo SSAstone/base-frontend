@@ -11,17 +11,24 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import ApiFetcher from '@/hooks/use_fetch'
+import ApiFetcher, { deleteData } from '@/hooks/use_fetch'
+import CheckOutlined from '@ant-design/icons/lib/icons/CheckOutlined'
 
 const CategoryPage = () => {
     const apiFetcher = new ApiFetcher();
-    const { data, refetch, mutation, deleteData } = apiFetcher.generateFetcher('/category') as any
+    const { Post, Get, Delete } = new ApiFetcher();
+    const { mutation, isSuccess, isPending } = Post("/category", {}) as any
+    const { data, refetch } = Get("/category") as any
+    // const { deleteData } = Delete("/category") as any
+    // const { data, refetch, deleteData } = apiFetcher.generateFetcher('/category') as any
+
+
 
     return (
         <div>
-            <Form layout="vertical" className='w-1/2' onFinish={async (values) => {
-                await mutation.mutateAsync(values)
-                await refetch()
+            <Form layout="vertical" className='w-1/2' onFinish={(values) => {
+                mutation.mutate(values)
+                refetch()
             }}>
                 <Form.Item label="Category Name" name={"name"}>
                     <Input className='w-full p-2 border border-slate-300 rounded focus:outline-none' placeholder="Enter category name"></Input>
@@ -36,7 +43,7 @@ const CategoryPage = () => {
                         <TableRow className='w-full'>
                             <TableHead>Invoice</TableHead>
                             <TableHead>Name</TableHead>
-                            <TableHead>Actions</TableHead>
+                            <TableHead colSpan={2} className='text-right'>Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody className='w-full'>
@@ -45,20 +52,20 @@ const CategoryPage = () => {
                                 <TableCell className="font-medium">{item._id}</TableCell>
                                 <TableCell>
                                     <div className='flex group items-center relative'>
-                                        <Form  layout="vertical" className='w-full'>
+                                        <Form  layout="vertical" onFinish={(values) => mutation.mutate({ _id: item?._id, name: values?.name })} className='w-full'>
                                             <Form.Item name={"name"}>
-                                                <input onBlur={(e) => mutation.mutate({ _id: item?._id, name: e.target.value })} className='w-full p-2 border border-none bg-transparent rounded focus:outline-none' defaultValue={item?.name} type="text" />
-                                                {/* {<button>
-                                                    <CheckOutlined className='hidden cursor-pointer group-hover:block absolute right-0' />
-                                                </button>} */}
+                                                <input className='w-full p-2 border border-none bg-transparent rounded focus:outline-none' defaultValue={item?.name} type="text" />
+                                                {<button className='bg-green-500 text-white rounded-full pt-1 pb-[3px] hidden px-[7px] cursor-pointer group-hover:block absolute right-0 top-[7px]'>
+                                                    <CheckOutlined />
+                                                </button>}
                                             </Form.Item>
                                         </Form>
                                     </div>
                                 </TableCell>
-                                <TableCell className='space-x-3'>
-                                    <button onClick={() => console.log(item._id)} className='btn'>Edit</button>
+                                <TableCell colSpan={2} className='space-x-3 text-right'>
+                                    {/* <button onClick={() => console.log(item._id)} className='btn'>Edit</button> */}
                                     <button onClick={async () => {
-                                        await deleteData(`/${item._id}`).then(() => refetch())
+                                        await deleteData(`/category/${item._id}`).then(() => refetch())
                                     }} className='btn'>Delete</button>
                                 </TableCell>
                             </TableRow>

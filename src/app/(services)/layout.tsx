@@ -7,7 +7,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const { data, isLoading } = useAuth()
     const router = useRouter()
 
-  if (data?.data?.role !== "user_service") {
+  if ( data?.data?.role === "user_service" || data?.data?.role !== "admin") {
     isLoading ? null : router.push('/')
   }
 

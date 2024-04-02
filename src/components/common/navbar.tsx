@@ -13,7 +13,7 @@ const Navbar = () => {
 
     const items: MenuProps['items'] = [
         {
-            label: <Link href="/products/e-commerce">E-commerce</Link>,
+            label: <Link href="/services/e-commerce">E-commerce</Link>,
             key: "1",
         },
         {

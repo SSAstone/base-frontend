@@ -50,7 +50,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <div className="bg-white h-full p-5 rounded space-y-2">
           <div className="flex justify-between items-center mt-3 mb-8">
             { !show && <h1 className='text-2xl text-bold'>Dashboard</h1>}
-            <MenuFoldOutlined onClick={() => setShow(!show)} className="text-xl cursor-pointer relative z-50" />
+            <MenuFoldOutlined onClick={() => setShow(!show)} className={`text-xl cursor-pointer relative z-50 ${show ? 'rotate-180 mx-auto' : 'rotate-0'}`} />
           </div>
           <div className="space-y-2">
             {

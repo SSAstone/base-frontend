@@ -113,6 +113,12 @@ body {
   @apply max-w-[1320px] mx-auto px-4 min-[1320px]:px-0;
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
+.fredoka {
+  font-family: 'Fredoka', sans-serif;
+}
+
 .ant-form-item-label {
   @apply pb-1 !important ;
 }

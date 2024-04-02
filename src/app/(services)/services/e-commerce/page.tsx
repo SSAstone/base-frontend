@@ -124,14 +124,7 @@ const Commerce = () => {
               <p className="text-lg">Logout</p>
               <p className="text-lg">Profile</p>
             </div>
-            // <Menu>
-            //   <Menu.Item>
-            //     <p className="text-lg">Logout</p>
-            //   </Menu.Item>
-            //   <Menu.Item>
-            //     <p className="text-lg">Profile</p>
-            //   </Menu.Item>
-            // </Menu>
+            
           }>
             <UserOutlined className="py-3 text-3xl cursor-pointer" />
           </Dropdown>
@@ -179,7 +172,7 @@ const Commerce = () => {
           </div>
         </div>
         <div className='mt-12'>
-          <h1 className="text-5xl font-bold">For You</h1>
+          <h1 className="text-5xl font-bold fredoka">For You</h1>
           <div className="grid grid-cols-6 gap-4 mt-3">
             {
               [1, 2, 3, 4, 5, 6, 7, 8, 9].map((item: number, index) => <div key={index} className={`bg-white ${index === 2 && ' row-span-2 col-span-2 '}}`}>
