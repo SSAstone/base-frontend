@@ -36,11 +36,11 @@ export default function Products() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data?.data?.data?.map((invoice: any) => (
+          {data?.data?.docs?.map((invoice: any) => (
             <TableRow key={invoice._id}>
               <TableCell className="font-medium">{invoice._id}</TableCell>
               <TableCell className="">
-                { invoice?.image[0] ? <Image  className='w-[40px] h-[40px]' src={invoice?.image[0]} alt={invoice?.name} width={50} height={50}></Image> : 'No Image'}
+                <Image  className='w-[40px] h-[40px]' src={invoice?.image} alt={"image"} width={50} height={50}></Image>
               </TableCell>
               <TableCell>{invoice?.name}</TableCell>
               <TableCell>{invoice?.category?.name}</TableCell>

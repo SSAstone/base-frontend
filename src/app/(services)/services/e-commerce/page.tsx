@@ -116,7 +116,6 @@ const Commerce = () => {
   const [show, setShow] = React.useState('');
   return (
     <div className=''>
-      {/* <div className='bg-[url("/e-comm/e-commerce.jpg")] bg-no-repeat'> */}
       <div className="container">
         <div className='flex justify-end'>
           <Dropdown overlay={
