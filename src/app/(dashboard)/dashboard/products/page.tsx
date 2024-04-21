@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table"
 import ApiFetcher, { deleteData } from '@/hooks/use_fetch'
 import Image from 'next/image'
+import Link from 'next/link'
 
 
 export default function Products() {
@@ -45,7 +46,7 @@ export default function Products() {
               <TableCell>{invoice?.name}</TableCell>
               <TableCell>{invoice?.category?.name}</TableCell>
               <TableCell className='space-x-3 text-right'>
-                <button onClick={() => console.log(invoice._id)} className='btn'>Edit</button>
+                <Link  className='btn' href={`/dashboard/products/${invoice._id}`}>Edit</Link>
                 <button onClick={async () => {
                   await deleteData(`/product/${invoice._id}`).then(() => refetch())
                 }} className='btn'>Delete</button>

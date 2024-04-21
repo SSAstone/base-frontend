@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import React from 'react';
 import Image from 'next/image';
 import UserOutlined from '@ant-design/icons/UserOutlined';
-import { Dropdown, Menu } from 'antd';
+import { Dropdown, Menu, Rate } from 'antd';
 import ApiFetcher from '@/hooks/use_fetch';
 
 interface Item {
@@ -146,10 +146,14 @@ export default function Home() {
             {
               Array.from({ length: 9 }, (_, index) => data?.data?.docs[index % data?.data?.docs?.length]).map((item: any, index: number) => <div key={index} className={`bg-white ${index === 2 && ' row-span-2 col-span-2 '}} overflow-hidden p-5 relative`}>
                 <div className="w-full h-52">
-                  <Image className='object-fill hover:scale-125 duration-300' src={item?.image} alt="ecommerce" width={1000} height={1000} />
+                  <Image className='object-fill' src={item?.image} alt="ecommerce" width={1000} height={1000} />
                 </div>
-                <div className="absolute left-0 right-0 bottom-0 w-full px-5 bg-slate-400 py-2 bg-opacity-60">
-                  <h1>{item?.name}</h1>
+                <div className="absolute left-0 right-0 bottom-0 w-full px-3 bg-slate-400 py-2 bg-opacity-60">
+                  <div className="flex justify-between items-center">
+                    <h1>{item?.name}</h1>
+                    <h1>{item?.price}</h1>
+                  </div>
+                  {item?.rating ? <Rate allowHalf defaultValue={item?.rating} className='text-sm'></Rate> : <Rate allowHalf value={5} className='text-sm'></Rate>}
                 </div>
               </div>)
             }

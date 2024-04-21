@@ -3,12 +3,19 @@ import instance from "./fetch";
 import { message, notification } from "antd";
 
 class ApiFetcher {
-    Get(url: string) {
+    Get(url: string, params?: any) {
+        console.log("🚀 ~ ApiFetcher ~ Get ~ params:", params)
+        
         const { isLoading, data, refetch } = useQuery({
-            queryKey: [url],
+            queryKey: [url, params && params],
             queryFn: async () => {
-                const res = await instance.get(url);
-                return res.data;
+                if(params) {
+                    const res = await instance.get(url + `${params && `/${params}`}`);
+                    return res.data;    
+                } else {
+                    const res = await instance.get(url);
+                    return res.data;
+                }
             }
         });
 
