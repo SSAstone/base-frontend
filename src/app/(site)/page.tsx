@@ -1,12 +1,13 @@
 "use client"
 import { useAuth } from '@/context/user_context';
 import { useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useEffect } from 'react';
 import Image from 'next/image';
 import UserOutlined from '@ant-design/icons/UserOutlined';
 import { Dropdown, Menu, Rate } from 'antd';
 import ApiFetcher from '@/hooks/use_fetch';
-
+import { MdOutlineBookmarkAdd, MdOutlineBookmarkAdded } from "react-icons/md";
+import Link from 'next/link';
 interface Item {
   name: string;
   image: string | { name: string; image: string }[];
@@ -74,14 +75,21 @@ const items: Item[] = [
 
 export default function Home() {
   const indexArr = items.findIndex(item => Array.isArray(item.image));
+  const [bookmark, setBookmark] = React.useState([] as string[]); ;
+  console.log("🚀 ~ Home ~ bookmark:", bookmark)
 
+  useEffect(() => {
+    const bookmark = localStorage.getItem('bookmarks_items');
+    if (bookmark) {
+      setBookmark(JSON.parse(bookmark));
+    }
+  }, [])
   const { Get } = new ApiFetcher();
 
   const { data, isLoading, refetch } = Get('/product') as any;
   const { data: category } = Get('/category') as any;
 
   const newArray = Array.from({ length: 10 }, (_, index) => data?.data?.docs[index % data?.data?.docs?.length]);
-  console.log(newArray);
 
   return (
     <div className="">
@@ -144,17 +152,33 @@ export default function Home() {
           <h1 className="text-5xl font-bold fredoka">For You</h1>
           <div className="grid grid-cols-6 gap-4 mt-3">
             {
-              Array.from({ length: 9 }, (_, index) => data?.data?.docs[index % data?.data?.docs?.length]).map((item: any, index: number) => <div key={index} className={`bg-white ${index === 2 && ' row-span-2 col-span-2 '}} overflow-hidden p-5 relative`}>
-                <div className="w-full h-52">
-                  <Image className='object-fill' src={item?.image} alt="ecommerce" width={1000} height={1000} />
-                </div>
-                <div className="absolute left-0 right-0 bottom-0 w-full px-3 bg-slate-400 py-2 bg-opacity-60">
+              Array.from({ length: 9 }, (_, index) => data?.data?.docs[index % data?.data?.docs?.length]).map((item: any, index: number) => <div key={index} className={`bg-white  ${index === 2 ? ' row-span-2 col-span-2' : 'h-52'} overflow-hidden p-5 relative`}>
+                <Link href={`/products/${item?._id}`}>
+                  <div className="w-full ">
+                    <Image className={` ${index === 2 ? '' : ''}`} src={item?.image} alt="ecommerce" width={1000} height={1000} />
+                  </div>
+                </Link>
+
+                <div className="absolute left-0 right-0 bottom-0 w-full px-3 bg-slate-400 py-2 bg-opacity-60 text-base">
                   <div className="flex justify-between items-center">
-                    <h1>{item?.name}</h1>
+                    <Link href={`/products/${item?._id}`}>
+                      <h1>{item?.name.length > 12 ? item?.name.slice(0, 12) + '...' : item?.name}</h1>
+                    </Link>
                     <h1>{item?.price}</h1>
                   </div>
-                  {item?.rating ? <Rate allowHalf defaultValue={item?.rating} className='text-sm'></Rate> : <Rate allowHalf value={5} className='text-sm'></Rate>}
+                  <div className="flex justify-between items-center">
+                    {item?.rating ? <Rate allowHalf defaultValue={item?.rating} className='text-sm'></Rate> : <Rate allowHalf value={5} className='text-sm'></Rate>}
+                    <div className="flex items-center gap-2 relative z-10">
+                      { !bookmark?.includes(item?._id) ? <MdOutlineBookmarkAdd onClick={() => {
+
+                        setBookmark([...bookmark, item._id]);
+                        const getItem = JSON.stringify([...bookmark, item._id])
+                        localStorage.setItem('bookmarks_items', getItem);
+                      }} className="text-xl cursor-pointer" /> : <MdOutlineBookmarkAdded className='text-xl ' />}
+                    </div>
+                  </div>
                 </div>
+
               </div>)
             }
           </div>

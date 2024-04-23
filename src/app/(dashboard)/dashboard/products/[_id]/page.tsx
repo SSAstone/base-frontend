@@ -40,7 +40,7 @@ const Page = ({ params }: { params: { _id: string } }) => {
           mutation.mutate({
             ...values,
             image: data?.image,
-            _id: params?._id
+            _id: params && params?._id
           }, {
             onSuccess: () => {
               router.push('/dashboard/products')
@@ -51,7 +51,8 @@ const Page = ({ params }: { params: { _id: string } }) => {
             onSuccess: (data: any) => {
               mutation.mutate({
                 ...values,
-                image: data?.data && data?.data
+                image: data?.data && data?.data,
+                _id: params && params?._id
               }, {
                 onSuccess: () => {
                   router.push('/dashboard/products')
