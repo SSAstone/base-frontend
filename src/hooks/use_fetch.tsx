@@ -1,24 +1,33 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import instance from "./fetch";
 import { message, notification } from "antd";
+import { getQueryClient } from "@/providers/fetch_provider";
+
 
 class ApiFetcher {
-    Get(url: string, params?: any) {        
+    Get(url: string) {
         const { isLoading, data, refetch } = useQuery({
-            queryKey: [url, params && params],
+            queryKey: [url],
             queryFn: async () => {
-                if(params) {
-                    const res = await instance.get(url + `${params && `/${params}`}`);
-                    return res.data;    
-                } else {
                     const res = await instance.get(url);
                     return res.data;
-                }
             }
         });
-
-        return { data, isLoading, refetch };
+    
+        const getData = async (params: any) => {
+            const queryData = await getQueryClient().fetchQuery({
+                queryKey: [url, params && params],
+                queryFn: async () => {
+                    const res = await instance.get(url + (params ? `${params}` : ''));
+                    return res.data;
+                }
+            });
+            return queryData;
+        }
+        return { data, isLoading, refetch, getData };
     }
+
+
 
     Post(url: string, options?: any) {
         try {
@@ -137,3 +146,41 @@ export const deleteData = async (url: string, options?: any) => {
         });
     });
 }
+
+
+export const queryData = getQueryClient().fetchQuery({
+    queryKey: ["6625628a71b3af7ce2b82c48"],
+    queryFn: async () => {
+        return await instance.get("/product/6625628a71b3af7ce2b82c48");
+    },
+})
+
+
+export const useGet = (url: string, params?: any) => {
+    const { isLoading, data, refetch } = useQuery({
+        queryKey: [url, params && params],
+        queryFn: async () => {
+            if (params) {
+                const res = await instance.get(url + `${params && `/${params}`}`);
+                return res.data;
+            } else {
+                const res = await instance.get(url);
+                return res.data;
+            }
+        }
+    });
+
+    const getData = async (params: any) => {
+        
+        const queryData = await getQueryClient().fetchQuery({
+            queryKey: [url, params && params],
+            queryFn: async () => {
+                const res = await instance.get(url + (params ? `/${params}` : ''));
+                return res.data;
+            }
+        });
+        return queryData;
+    }
+    return { data, isLoading, refetch, getData };
+}
+

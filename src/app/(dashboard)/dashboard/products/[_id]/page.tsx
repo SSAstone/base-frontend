@@ -16,18 +16,23 @@ const Page = ({ params }: { params: { _id: string } }) => {
   const router = useRouter()
 
   // if (params._id !== "add") {
-  const { data: product } = Get(productData, params?._id) as any
+  const { data: product, getData } = Get(productData) as any
   // }
   useEffect(() => {
-    form.setFieldsValue({
-      ...product?.data,
-      image: product?.data?.image ? [
-        {
-          url: product?.data?.image
-        }
-      ] : []
-    })
-
+    if (params?._id) {
+      
+      const productt = getData(params?._id)
+      console.log("🚀 ~ useEffect ~ productt:", productt)
+      form.setFieldsValue({
+        ...productt?.data,
+        image: productt?.data?.image ? [
+          {
+            url: productt?.data?.image
+          }
+        ] : []
+      })
+    }
+      
   }, [product])
 
   return (

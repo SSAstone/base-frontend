@@ -6,8 +6,8 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
     (config: any) => {
-        // const token = document.cookie.split('; ').find(row => row.startsWith('accessToken='))?.split('=')[1];
-        const token = localStorage.getItem('accessToken');
+        // const token = localStorage.getItem('accessToken');
+        const token = typeof localStorage !== 'undefined' ? localStorage.getItem('accessToken') : null;
 
         if (token) {
             config.headers = {

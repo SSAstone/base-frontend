@@ -5,9 +5,13 @@ import React, { useEffect } from 'react';
 import Image from 'next/image';
 import UserOutlined from '@ant-design/icons/UserOutlined';
 import { Dropdown, Menu, Rate } from 'antd';
-import ApiFetcher from '@/hooks/use_fetch';
+import ApiFetcher, {  useGet } from '@/hooks/use_fetch';
 import { MdOutlineBookmarkAdd, MdOutlineBookmarkAdded } from "react-icons/md";
 import Link from 'next/link';
+import { IoCartOutline } from "react-icons/io5";
+import { productData } from '@/lib/end_piont';
+import instance from '@/hooks/fetch';
+
 interface Item {
   name: string;
   image: string | { name: string; image: string }[];
@@ -75,8 +79,7 @@ const items: Item[] = [
 
 export default function Home() {
   const indexArr = items.findIndex(item => Array.isArray(item.image));
-  const [bookmark, setBookmark] = React.useState([] as string[]); ;
-  console.log("🚀 ~ Home ~ bookmark:", bookmark)
+  const [bookmark, setBookmark] = React.useState([] as string[]);;
 
   useEffect(() => {
     const bookmark = localStorage.getItem('bookmarks_items');
@@ -86,7 +89,8 @@ export default function Home() {
   }, [])
   const { Get } = new ApiFetcher();
 
-  const { data, isLoading, refetch } = Get('/product') as any;
+  const { data, getData } = Get(productData) as any;
+  // const data = []
   const { data: category } = Get('/category') as any;
 
   const newArray = Array.from({ length: 10 }, (_, index) => data?.data?.docs[index % data?.data?.docs?.length]);
@@ -94,15 +98,21 @@ export default function Home() {
   return (
     <div className="">
       <div className="container">
-        <div className='flex justify-end'>
+        <div className='flex gap-5 justify-end'>
+          <Dropdown overlay={
+            <div className='bg-white p-5 rounded space-y-2'>
+              
+            </div>
+          }>
+          <IoCartOutline className="text-3xl cursor-pointer" />
+          </Dropdown>
           <Dropdown overlay={
             <div className='bg-white p-5 rounded space-y-2'>
               <p className="text-lg">Logout</p>
               <p className="text-lg">Profile</p>
             </div>
-
           }>
-            <UserOutlined className="py-3 text-3xl cursor-pointer" />
+            <UserOutlined className=" text-2xl cursor-pointer" />
           </Dropdown>
         </div>
         <div className="text-center pt-32 pb-20 ">
@@ -169,11 +179,15 @@ export default function Home() {
                   <div className="flex justify-between items-center">
                     {item?.rating ? <Rate allowHalf defaultValue={item?.rating} className='text-sm'></Rate> : <Rate allowHalf value={5} className='text-sm'></Rate>}
                     <div className="flex items-center gap-2 relative z-10">
-                      { !bookmark?.includes(item?._id) ? <MdOutlineBookmarkAdd onClick={() => {
-
+                      {!bookmark?.includes(item?._id) ? <MdOutlineBookmarkAdd onClick={() => {
                         setBookmark([...bookmark, item._id]);
                         const getItem = JSON.stringify([...bookmark, item._id])
                         localStorage.setItem('bookmarks_items', getItem);
+                        getData(`?ids=${[...bookmark, item._id].join('/')}`).then((data: any) => {
+                          console.log("🚀 ~ {!bookmark?.includes ~ queryData:", data)
+                        })
+                        // const endpoint = `YOUR_API_ENDPOINT?ids=${[...bookmark, item._id].join('/')}`;
+                        // console.log("🚀 ~ {!bookmark?.includes ~ endpoint:", endpoint)
                       }} className="text-xl cursor-pointer" /> : <MdOutlineBookmarkAdded className='text-xl ' />}
                     </div>
                   </div>
