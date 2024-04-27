@@ -19,20 +19,29 @@ const Page = ({ params }: { params: { _id: string } }) => {
   const { data: product, getData } = Get(productData) as any
   // }
   useEffect(() => {
-    if (params?._id) {
-      
-      const productt = getData(params?._id)
-      console.log("🚀 ~ useEffect ~ productt:", productt)
-      form.setFieldsValue({
-        ...productt?.data,
-        image: productt?.data?.image ? [
-          {
-            url: productt?.data?.image
-          }
-        ] : []
+    if (params?._id !== 'add') {
+      getData(`/${params?._id}`).then((data: any) => {
+        form.setFieldsValue({
+          ...data?.data,
+          image: data?.data?.image ? [
+            {
+              url: data?.data?.image
+            }
+          ] : []
+        })
       })
+
+      // console.log("🚀 ~ useEffect ~ productt:", productt)
+      // form.setFieldsValue({
+      //   ...productt?.data,
+      //   image: productt?.data?.image ? [
+      //     {
+      //       url: productt?.data?.image
+      //     }
+      //   ] : []
+      // })
     }
-      
+
   }, [product])
 
   return (
@@ -67,6 +76,7 @@ const Page = ({ params }: { params: { _id: string } }) => {
           })
         }
       }}>
+        <UploadImage label="Image" name={"image"}></UploadImage>
         <Form.Item label="Product Name" name={"name"}>
           <Input className='w-full p-2 border border-slate-300 rounded focus:outline-none' type="text" placeholder="Enter product name" />
         </Form.Item>
@@ -76,7 +86,6 @@ const Page = ({ params }: { params: { _id: string } }) => {
         <Form.Item label="Description" name={"description"}>
           <TextArea className='w-full p-2 border border-slate-300 rounded focus:outline-none' placeholder="Enter description" rows={4} />
         </Form.Item>
-        <UploadImage label="Image" name={"image"}></UploadImage>
 
         <Form.Item label="Category" name={"categoryId"}>
           <Select allowClear>
