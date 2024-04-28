@@ -5,8 +5,8 @@ import React, { useEffect } from 'react';
 import Image from 'next/image';
 import UserOutlined from '@ant-design/icons/UserOutlined';
 import { Dropdown, Menu, Rate } from 'antd';
-import ApiFetcher, { useGet } from '@/hooks/use_fetch';
-import { MdOutlineAddBox, MdOutlineBookmarkAdd, MdOutlineBookmarkAdded } from "react-icons/md";
+import ApiFetcher, { deleteData, useGet } from '@/hooks/use_fetch';
+import { MdDelete, MdDeleteOutline, MdOutlineAddBox, MdOutlineBookmarkAdd, MdOutlineBookmarkAdded } from "react-icons/md";
 import Link from 'next/link';
 import { IoCartOutline } from "react-icons/io5";
 import { categoryData, productData } from '@/lib/end_piont';
@@ -81,6 +81,11 @@ export default function Home() {
   const [bookmark, setBookmark] = React.useState([] as object[]);;
   const [bookmarkData, setBookmarkData] = React.useState([] as string[]);;
   const [quantity, setQuantity] = React.useState(1);
+  const { Get } = new ApiFetcher();
+  const { data, getData } = Get(productData) as any;
+  const { data: bookmarkProductData, getData: getBookmark, refetch } = Get(productData) as any;
+  console.log("🚀 ~ Home ~ bookmarkProductData:", bookmarkProductData)
+  const { data: category } = Get(categoryData) as any;
 
   useEffect(() => {
     const bookmark = localStorage.getItem('bookmarks_items');
@@ -89,20 +94,16 @@ export default function Home() {
         const bookmarkParse = JSON.parse(bookmark);
         const bookmarkId = bookmarkParse?.map((e: any) => e?._id);
         setBookmark(bookmarkParse);
-        getData(`?ids=${[...bookmarkId].join('/')}`).then((data: any) => {
-          setBookmarkData(data?.data);
-        });
+        getBookmark(`?ids=${[...bookmarkId].join('/')}`)
       } catch (error) {
         console.error('Error parsing JSON:', error);
       }
     }
+    getData(`?page=1&limit=10`)
   }, []);
 
-  const { Get } = new ApiFetcher();
-  const { data, getData } = Get(productData) as any;
-  const { data: category } = Get(categoryData) as any;
 
-  const newArray = Array.from({ length: 10 }, (_, index) => data?.data?.docs[index % data?.data?.docs?.length]);
+  // const newArray = Array.from({ length: 10 }, (_, index) => data?.data?.docs[index % data?.data?.docs?.length]);
 
   return (
     <div className="">
@@ -111,7 +112,7 @@ export default function Home() {
           <Dropdown overlay={
             <div className='bg-white p-3 rounded space-y-2'>
               {
-                bookmarkData?.map((item: any) => <div className='flex gap-3 p-2 rounded items-center justify-between bg-slate-200'>
+                bookmarkProductData?.data?.map((item: any) => <div className='flex gap-3 p-2 rounded items-center justify-between bg-slate-200'>
                   <div className="flex gap-3 items-center">
                     <Image src={item?.image} alt={item?.name} width={45} height={45} />
                     <div>
@@ -119,12 +120,21 @@ export default function Home() {
                       <p className="text-sm">{item?.price}</p>
                     </div>
                   </div>
-                  <div className="flex gap-1 items-center">
-                    <h1 className="text-2xl">{quantity}</h1>
-                    <div className="text-2xl">
+                  <div className="flex gap-2 items-center text-2xl">
+                    <div className=" flex items-center">
                       <MdOutlineAddBox onClick={() => setQuantity(quantity + 1)} className="cursor-pointer" />
+                      <span className="px-1">{quantity}</span>
                       <LuMinusSquare onClick={() => setQuantity(quantity - 1)} className="cursor-pointer" />
                     </div>
+                    <MdDeleteOutline className="cursor-pointer" onClick={async () => {
+                      // let bookmark: any = localStorage.getItem('bookmarks_items');
+                      // let bookmarksItems = JSON.parse(bookmark);
+                      const bookmarksItems = bookmark.filter((bookmarks: any) => bookmarks._id !== item._id);
+                      console.log("🚀 ~ Home ~ items:", bookmark)
+                      localStorage.setItem('bookmarks_items', JSON.stringify(bookmarksItems));
+                      console.log('Item deleted from localStorage:', bookmarksItems);
+                      await deleteData(`/product/${item._id}`).then(() => refetch())
+                    }}></MdDeleteOutline>
                   </div>
                 </div>)
               }
@@ -198,7 +208,6 @@ export default function Home() {
                     <Image className={` ${index === 2 ? '' : ''}`} src={item?.image} alt="ecommerce" width={1000} height={1000} />
                   </div>
                 </Link>
-
                 <div className="absolute left-0 right-0 bottom-0 w-full px-3 bg-slate-400 py-2 bg-opacity-60 text-base">
                   <div className="flex justify-between items-center">
                     <Link href={`/products/${item?._id}`}>
@@ -215,10 +224,7 @@ export default function Home() {
                         const getItem = JSON.stringify(bookmarkProduct)
                         localStorage.setItem('bookmarks_items', getItem);
                         const bookmarkId = bookmarkProduct?.map((e: any) => e?._id)
-                        getData(`?ids=${[...bookmarkId].join('/')}`).then((data: any) => {
-                          setBookmarkData(data?.data)
-                        })
-                        // const endpoint = `YOUR_API_ENDPOINT?ids=${[...bookmark, item._id].join('/')}`;
+                        getBookmark(`?ids=${[...bookmarkId].join('/')}`)
                       }} className="text-xl cursor-pointer" /> : <MdOutlineBookmarkAdded className='text-xl ' />}
                     </div>
                   </div>
