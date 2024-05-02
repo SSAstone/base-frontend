@@ -7,32 +7,24 @@ import { useState } from "react";
 
 class ApiFetcher {
     Get(url: string) {
-        const [items, setItems] = useState('');
-        console.log("🚀 ~ ApiFetcher ~ Get ~ items:", items)
+        const [params, setParams] = useState('');
+        const [query, setQuery] = useState('');
         const { isLoading, data, refetch } = useQuery({
-            queryKey: [url, items],
+            queryKey: [url, params, query],
             queryFn: async () => {
-                const res = await instance.get(url + (items ? `${items}` : ''));
+                const res = await instance.get(url + (params ? `/${params}` : '') + (query ? `?${query}` : ''));
                 return res.data;
             }
         });
 
-        const getData = (params?: any) => {
-            setItems(params)
+        const getData = (e: any) => {
+            if(typeof e === 'string') {
+                setParams(e)
+            } else {
+                const query = Object.keys(e).map(key => `${key}=${e[key]}`).join('&')
+                setQuery(query)
+            }
         }
-
-        // const getData = async (params?: any) => {
-        //     if (params) {
-        //         const queryData = await getQueryClient().fetchQuery({
-        //             queryKey: [url, params],
-        //             queryFn: async () => {
-        //                 const res = await instance.get(url + (params ? `${params}` : ''));
-        //                 return res.data;
-        //             }
-        //         });
-        //         return queryData;
-        //     }
-        // }
         return { data, isLoading, refetch, getData };
     }
 

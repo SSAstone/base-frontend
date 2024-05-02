@@ -1,12 +1,10 @@
 "use client"
-import { useAuth } from '@/context/user_context';
-import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 import Image from 'next/image';
 import UserOutlined from '@ant-design/icons/UserOutlined';
 import { Dropdown, Menu, Rate } from 'antd';
 import ApiFetcher, { deleteData, useGet } from '@/hooks/use_fetch';
-import { MdDelete, MdDeleteOutline, MdOutlineAddBox, MdOutlineBookmarkAdd, MdOutlineBookmarkAdded } from "react-icons/md";
+import { MdDeleteOutline, MdOutlineAddBox, MdOutlineBookmarkAdd, MdOutlineBookmarkAdded } from "react-icons/md";
 import Link from 'next/link';
 import { IoCartOutline } from "react-icons/io5";
 import { categoryData, productData } from '@/lib/end_piont';
@@ -79,14 +77,14 @@ const items: Item[] = [
 export default function Home() {
   const indexArr = items.findIndex(item => Array.isArray(item.image));
   const [bookmark, setBookmark] = React.useState([] as object[]);;
+  console.log("🚀 ~ Home ~ bookmark:", bookmark)
   const [bookmarkData, setBookmarkData] = React.useState([] as string[]);;
   const [quantity, setQuantity] = React.useState(1);
   const { Get } = new ApiFetcher();
   const { data, getData } = Get(productData) as any;
   const { data: bookmarkProductData, getData: getBookmark, refetch } = Get(productData) as any;
-  console.log("🚀 ~ Home ~ bookmarkProductData:", bookmarkProductData)
   const { data: category } = Get(categoryData) as any;
-
+  
   useEffect(() => {
     const bookmark = localStorage.getItem('bookmarks_items');
     if (bookmark) {
@@ -94,16 +92,13 @@ export default function Home() {
         const bookmarkParse = JSON.parse(bookmark);
         const bookmarkId = bookmarkParse?.map((e: any) => e?._id);
         setBookmark(bookmarkParse);
-        getBookmark(`?ids=${[...bookmarkId].join('/')}`)
+        getBookmark({ ids: `${[...bookmarkId].join('/')}`})
       } catch (error) {
         console.error('Error parsing JSON:', error);
       }
     }
-    getData(`?page=1&limit=10`)
+    getData({ page: 1, limit: 10 })
   }, []);
-
-
-  // const newArray = Array.from({ length: 10 }, (_, index) => data?.data?.docs[index % data?.data?.docs?.length]);
 
   return (
     <div className="">
@@ -111,8 +106,8 @@ export default function Home() {
         <div className='flex gap-5 justify-end'>
           <Dropdown overlay={
             <div className='bg-white p-3 rounded space-y-2'>
-              {
-                bookmarkProductData?.data?.map((item: any) => <div className='flex gap-3 p-2 rounded items-center justify-between bg-slate-200'>
+              {  bookmark.length > 0 &&  
+                bookmarkProductData?.data?.map((item: any, index: number) => <div key={index} className='flex gap-3 p-2 rounded items-center justify-between bg-slate-200'>
                   <div className="flex gap-3 items-center">
                     <Image src={item?.image} alt={item?.name} width={45} height={45} />
                     <div>

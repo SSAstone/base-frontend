@@ -13,18 +13,17 @@ import {
 import ApiFetcher, { deleteData } from '@/hooks/use_fetch'
 import Image from 'next/image'
 import Link from 'next/link'
+import { productData } from '@/lib/end_piont'
+
 
 
 export default function Products() {
   const { Get } = new ApiFetcher()
-  const [data, setData] = useState<any>([])
-  const {data: productData, refetch, getData } = Get('/product') as any
-  console.log("🚀 ~ Products ~ productData:", productData)
+  const { data, refetch, getData } = Get(productData) as any
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    // getItems(`?page=${currentPage}&limit=3`)
-    getData(`?page=${currentPage}&limit=3`)
+    getData({ page: currentPage, limit: '3' })
   }, [currentPage])
 
   return (
@@ -40,7 +39,7 @@ export default function Products() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {productData?.data?.docs?.map((invoice: any) => (
+          {data?.data?.docs?.map((invoice: any) => (
             <TableRow key={invoice._id}>
               <TableCell className="font-medium">{invoice._id}</TableCell>
               <TableCell className="">
@@ -60,16 +59,16 @@ export default function Products() {
         <TableFooter className="w-full">
           <TableRow>
             <TableCell><p>
-                Page {currentPage} of {productData?.data?.totalDocs}
-              </p></TableCell>
+              Page {currentPage} of {data?.data?.totalDocs}
+            </p></TableCell>
             <TableCell colSpan={4} className="text-right space-x-5">
-              <button className='btn' onClick={() => setCurrentPage(currentPage - 1)} disabled={!productData?.data?.prevPage}>
+              <button className='btn' onClick={() => setCurrentPage(currentPage - 1)} disabled={!data?.data?.prevPage}>
                 Prev Page
               </button>
-              <button className='btn' onClick={() => setCurrentPage(currentPage + 1)} disabled={!productData?.data?.nextPage}>
+              <button className='btn' onClick={() => setCurrentPage(currentPage + 1)} disabled={!data?.data?.nextPage}>
                 Next Page
               </button>
-              
+
             </TableCell>
           </TableRow>
         </TableFooter>

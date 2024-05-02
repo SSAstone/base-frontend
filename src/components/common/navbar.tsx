@@ -8,7 +8,6 @@ import React from 'react'
 
 const Navbar = () => {
     const { logout, data } = useAuth()
-    console.log("🚀 ~ Navbar ~ data:", data)
     const router = useRouter()
 
     const items: MenuProps['items'] = [

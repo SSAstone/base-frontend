@@ -14,32 +14,22 @@ const Page = ({ params }: { params: { _id: string } }) => {
   const { mutation, isPending } = Post(productData, {}) as any
   const { mutation: imageMutation } = formPost(uploadImage) as any
   const router = useRouter()
-
-  // if (params._id !== "add") {
   const { data: product, getData } = Get(productData) as any
-  // }
+
   useEffect(() => {
     if (params?._id !== 'add') {
-      getData(`/${params?._id}`).then((data: any) => {
+      getData(params?._id)
+
+      if(product) {
         form.setFieldsValue({
-          ...data?.data,
-          image: data?.data?.image ? [
+          ...product?.data,
+          image: product?.data?.image ? [
             {
-              url: data?.data?.image
+              url: product?.data?.image
             }
           ] : []
         })
-      })
-
-      // console.log("🚀 ~ useEffect ~ productt:", productt)
-      // form.setFieldsValue({
-      //   ...productt?.data,
-      //   image: productt?.data?.image ? [
-      //     {
-      //       url: productt?.data?.image
-      //     }
-      //   ] : []
-      // })
+      }
     }
 
   }, [product])
