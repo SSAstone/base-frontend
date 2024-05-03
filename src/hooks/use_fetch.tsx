@@ -9,6 +9,7 @@ class ApiFetcher {
     Get(url: string) {
         const [params, setParams] = useState('');
         const [query, setQuery] = useState('');
+        // console.log(url + (params && `/${params}`) + (query && `?${query}`));
         const { isLoading, data, refetch } = useQuery({
             queryKey: [url, params, query],
             queryFn: async () => {

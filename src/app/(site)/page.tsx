@@ -77,14 +77,12 @@ const items: Item[] = [
 export default function Home() {
   const indexArr = items.findIndex(item => Array.isArray(item.image));
   const [bookmark, setBookmark] = React.useState([] as object[]);;
-  console.log("🚀 ~ Home ~ bookmark:", bookmark)
-  const [bookmarkData, setBookmarkData] = React.useState([] as string[]);;
-  const [quantity, setQuantity] = React.useState(1);
   const { Get } = new ApiFetcher();
   const { data, getData } = Get(productData) as any;
   const { data: bookmarkProductData, getData: getBookmark, refetch } = Get(productData) as any;
+  console.log("🚀 ~ Home ~ bookmarkProductData:", bookmarkProductData)
   const { data: category } = Get(categoryData) as any;
-  
+
   useEffect(() => {
     const bookmark = localStorage.getItem('bookmarks_items');
     if (bookmark) {
@@ -92,45 +90,61 @@ export default function Home() {
         const bookmarkParse = JSON.parse(bookmark);
         const bookmarkId = bookmarkParse?.map((e: any) => e?._id);
         setBookmark(bookmarkParse);
-        getBookmark({ ids: `${[...bookmarkId].join('/')}`})
+        getBookmark({ ids: `${[...bookmarkId].join('/')}` })
       } catch (error) {
         console.error('Error parsing JSON:', error);
       }
     }
     getData({ page: 1, limit: 10 })
   }, []);
-
+  
   return (
     <div className="">
       <div className="container">
         <div className='flex gap-5 justify-end'>
           <Dropdown overlay={
             <div className='bg-white p-3 rounded space-y-2'>
-              {  bookmark.length > 0 &&  
-                bookmarkProductData?.data?.map((item: any, index: number) => <div key={index} className='flex gap-3 p-2 rounded items-center justify-between bg-slate-200'>
-                  <div className="flex gap-3 items-center">
-                    <Image src={item?.image} alt={item?.name} width={45} height={45} />
-                    <div>
-                      <p className="text-lg font-medium">{item?.name}</p>
-                      <p className="text-sm">{item?.price}</p>
+              {bookmark.length > 0 &&
+                bookmarkProductData?.data?.map((item: any, index: number) => <div key={index}>
+                  {(bookmark.find((ite: any) => ite._id === item._id) as any)?.quantity > 0 &&
+                    <div key={index} className='flex gap-3 p-2 rounded items-center justify-between bg-slate-200'>
+                      <div className="flex gap-3 items-center">
+                        <Image className='w-10 h-10' src={item?.image} alt={item?.name} width={45} height={45} />
+                        <div>
+                          <p className="text-lg font-medium">{item?.name}</p>
+                          <p className="text-sm">{item?.price}</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2 items-center text-2xl">
+                        <div className=" flex items-center">
+                          <MdOutlineAddBox onClick={() => {
+                            const bookmark = JSON.parse(localStorage.getItem('bookmarks_items') || '[]');
+                            const itemIndex = bookmark.findIndex((ite: any) => ite._id === item._id);
+                            if (itemIndex !== -1) {
+                              bookmark[itemIndex].quantity = bookmark[itemIndex].quantity + 1;
+                              setBookmark(bookmark);
+                            }
+                            localStorage.setItem('bookmarks_items', JSON.stringify(bookmark));
+                          }} className="cursor-pointer" />
+                          <span className="px-1">{(bookmark.find((ite: any) => ite._id === item._id) as any)?.quantity || 0}</span>
+                          <LuMinusSquare onClick={() => {
+                            const bookmark = JSON.parse(localStorage.getItem('bookmarks_items') || '[]');
+                            const itemIndex = bookmark.findIndex((ite: any) => ite._id === item._id);
+                            if (itemIndex !== -1) {
+                              bookmark[itemIndex].quantity = bookmark[itemIndex].quantity - 1;
+                              setBookmark(bookmark);
+                            }
+                            localStorage.setItem('bookmarks_items', JSON.stringify(bookmark));
+                          }} className="cursor-pointer" />
+                        </div>
+                        <MdDeleteOutline className="cursor-pointer" onClick={async () => {
+                          const bookmarksItems = bookmark.filter((bookmarks: any) => bookmarks._id !== item._id);
+                          setBookmark(bookmarksItems);
+                          localStorage.setItem('bookmarks_items', JSON.stringify(bookmarksItems));
+                        }}></MdDeleteOutline>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex gap-2 items-center text-2xl">
-                    <div className=" flex items-center">
-                      <MdOutlineAddBox onClick={() => setQuantity(quantity + 1)} className="cursor-pointer" />
-                      <span className="px-1">{quantity}</span>
-                      <LuMinusSquare onClick={() => setQuantity(quantity - 1)} className="cursor-pointer" />
-                    </div>
-                    <MdDeleteOutline className="cursor-pointer" onClick={async () => {
-                      // let bookmark: any = localStorage.getItem('bookmarks_items');
-                      // let bookmarksItems = JSON.parse(bookmark);
-                      const bookmarksItems = bookmark.filter((bookmarks: any) => bookmarks._id !== item._id);
-                      console.log("🚀 ~ Home ~ items:", bookmark)
-                      localStorage.setItem('bookmarks_items', JSON.stringify(bookmarksItems));
-                      console.log('Item deleted from localStorage:', bookmarksItems);
-                      await deleteData(`/product/${item._id}`).then(() => refetch())
-                    }}></MdDeleteOutline>
-                  </div>
+                  }
                 </div>)
               }
               <div className="flex justify-between items-center gap-2">
@@ -219,7 +233,7 @@ export default function Home() {
                         const getItem = JSON.stringify(bookmarkProduct)
                         localStorage.setItem('bookmarks_items', getItem);
                         const bookmarkId = bookmarkProduct?.map((e: any) => e?._id)
-                        getBookmark(`?ids=${[...bookmarkId].join('/')}`)
+                        getBookmark({ ids: `${[...bookmarkId].join('/')}` })
                       }} className="text-xl cursor-pointer" /> : <MdOutlineBookmarkAdded className='text-xl ' />}
                     </div>
                   </div>
