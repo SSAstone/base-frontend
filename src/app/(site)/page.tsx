@@ -2,13 +2,14 @@
 import React, { useEffect } from 'react';
 import Image from 'next/image';
 import UserOutlined from '@ant-design/icons/UserOutlined';
-import { Dropdown, Menu, Rate } from 'antd';
-import ApiFetcher, { deleteData, useGet } from '@/hooks/use_fetch';
+import { Dropdown, Rate } from 'antd';
+import ApiFetcher from '@/hooks/use_fetch';
 import { MdDeleteOutline, MdOutlineAddBox, MdOutlineBookmarkAdd, MdOutlineBookmarkAdded } from "react-icons/md";
 import Link from 'next/link';
 import { IoCartOutline } from "react-icons/io5";
-import { categoryData, productData } from '@/lib/end_piont';
+import { categoryData, productData, sslCommerzPayment } from '@/lib/end_piont';
 import { LuMinusSquare } from "react-icons/lu";
+import { useRouter } from 'next/navigation';
 interface Item {
   name: string;
   image: string | { name: string; image: string }[];
@@ -75,13 +76,15 @@ const items: Item[] = [
 ]
 
 export default function Home() {
+  const router = useRouter()
   const indexArr = items.findIndex(item => Array.isArray(item.image));
-  const [bookmark, setBookmark] = React.useState([] as object[]);;
-  const { Get } = new ApiFetcher();
+  const [bookmark, setBookmark] = React.useState([] as object[]);
+  const { Get, Post } = new ApiFetcher();
   const { data, getData } = Get(productData) as any;
-  const { data: bookmarkProductData, getData: getBookmark, refetch } = Get(productData) as any;
-  console.log("🚀 ~ Home ~ bookmarkProductData:", bookmarkProductData)
+  const { data: bookmarkProductData, getData: getBookmark } = Get(productData) as any;
   const { data: category } = Get(categoryData) as any;
+  const { mutation, isPending } = Post(sslCommerzPayment, {}) as any
+
 
   useEffect(() => {
     const bookmark = localStorage.getItem('bookmarks_items');
@@ -106,7 +109,7 @@ export default function Home() {
             <div className='bg-white p-3 rounded space-y-2'>
               {bookmark.length > 0 &&
                 bookmarkProductData?.data?.map((item: any, index: number) => <div key={index}>
-                  {(bookmark.find((ite: any) => ite._id === item._id) as any)?.quantity > 0 &&
+                  {(bookmark.find((ite: any) => ite._id === item._id)) &&
                     <div key={index} className='flex gap-3 p-2 rounded items-center justify-between bg-slate-200'>
                       <div className="flex gap-3 items-center">
                         <Image className='w-10 h-10' src={item?.image} alt={item?.name} width={45} height={45} />
@@ -148,8 +151,21 @@ export default function Home() {
                 </div>)
               }
               <div className="flex justify-between items-center gap-2">
-                <button className="w-full py-2 rounded bg-slate-200 text-center">Bay</button>
-                <button className="w-full py-2 rounded bg-slate-200 text-center">Clear</button>
+                <button onClick={() => {
+                  const bookmark = JSON.parse(localStorage.getItem('bookmarks_items') || '[]');
+                  console.log("🚀 ~ Home ~ bookmark:", bookmark)
+                  mutation.mutate({
+                    productId: bookmark
+                  }, {
+                    onSuccess: (data: any) => {
+                      router.push(data?.data);
+                    }
+                  })        
+                }} className="w-full py-2 rounded bg-slate-200 text-center">Bay</button>
+                <button onClick={() => {
+                  localStorage.removeItem('bookmarks_items');
+                  setBookmark([]);
+                }} className="w-full py-2 rounded bg-slate-200 text-center">Clear</button>
               </div>
             </div>
           }>
