@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     env: {
-        backendUrl: process.env.API_URL
+        backendUrl: 'http://localhost:5550'
     },
     images: {
         domains: ['firebasestorage.googleapis.com'],
