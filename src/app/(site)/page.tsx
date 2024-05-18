@@ -1,15 +1,17 @@
 "use client"
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import UserOutlined from '@ant-design/icons/UserOutlined';
-import { Dropdown, Rate } from 'antd';
+import { Dropdown, Modal, Rate } from 'antd';
 import ApiFetcher from '@/hooks/use_fetch';
-import { MdDeleteOutline, MdOutlineAddBox, MdOutlineBookmarkAdd, MdOutlineBookmarkAdded } from "react-icons/md";
+import { MdDeleteOutline, MdMessage, MdOutlineAddBox, MdOutlineBookmarkAdd, MdOutlineBookmarkAdded } from "react-icons/md";
 import Link from 'next/link';
 import { IoCartOutline } from "react-icons/io5";
 import { categoryData, productData, sslCommerzPayment } from '@/lib/end_piont';
 import { LuMinusSquare } from "react-icons/lu";
 import { useRouter } from 'next/navigation';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import Messages from '@/services/messages';
 interface Item {
   name: string;
   image: string | { name: string; image: string }[];
@@ -76,6 +78,7 @@ const items: Item[] = [
 ]
 
 export default function Home() {
+  const [open, setOpen] = React.useState(false);
   const router = useRouter()
   const indexArr = items.findIndex(item => Array.isArray(item.image));
   const [bookmark, setBookmark] = React.useState([] as object[]);
@@ -85,6 +88,16 @@ export default function Home() {
   const { data: category } = Get(categoryData) as any;
   const { mutation, isPending } = Post(sslCommerzPayment, {}) as any
 
+  const [username, setUsername] = useState('');
+  const [group, setGroup] = useState('');
+
+  const handleStartChat = () => {
+    if (!username) {
+      alert('Please enter a username');
+      return;
+    }
+    // Other setup code if needed
+  };
 
   useEffect(() => {
     const bookmark = localStorage.getItem('bookmarks_items');
@@ -100,7 +113,7 @@ export default function Home() {
     }
     getData({ page: 1, limit: 10 })
   }, []);
-  
+
   return (
     <div className="">
       <div className="container">
@@ -160,7 +173,7 @@ export default function Home() {
                     onSuccess: (data: any) => {
                       router.push(data?.data);
                     }
-                  })        
+                  })
                 }} className="w-full py-2 rounded bg-slate-200 text-center">Bay</button>
                 <button onClick={() => {
                   localStorage.removeItem('bookmarks_items');
@@ -179,7 +192,35 @@ export default function Home() {
           }>
             <UserOutlined className=" text-2xl cursor-pointer" />
           </Dropdown>
+          <MdMessage className="text-3xl cursor-pointer" onClick={() => setOpen(true)} />
         </div>
+        <Modal open={open} onCancel={() => setOpen(false)} footer={null}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <h1>Chat App</h1>
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Group (optional)"
+              value={group}
+              onChange={(e) => setGroup(e.target.value)}
+            />
+            <button onClick={handleStartChat}>Start Chat</button>
+            {username && <Messages username={username} group={group} />}
+          </div>
+          {/* <LineChart width={600} height={300} data={data}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Line type="monotone" dataKey="value" stroke="#8884d8" activeDot={{ r: 8 }} />
+          </LineChart> */}
+        </Modal>
         <div className="text-center pt-32 pb-20 ">
           <h1 className="text-5xl font-bold">E-Commerce</h1>
           <p>Make your own e-commerce</p>
@@ -227,7 +268,7 @@ export default function Home() {
           <h1 className="text-5xl font-bold fredoka">For You</h1>
           <div className="grid grid-cols-6 gap-4 mt-3">
             {
-              Array.from({ length: 9 }, (_, index) => data?.data?.docs[index % data?.data?.docs?.length]).map((item: any, index: number) => <div key={index} className={`bg-white  ${index === 2 ? ' row-span-2 col-span-2' : 'h-52'} overflow-hidden p-5 relative`}>
+              Array.from({ length: 9 }, (_, index) => data?.docs[index % data?.docs?.length]).map((item: any, index: number) => <div key={index} className={`bg-white  ${index === 2 ? ' row-span-2 col-span-2' : 'h-52'} overflow-hidden p-5 relative`}>
                 <Link href={`/products/${item?._id}`}>
                   <div className="w-full ">
                     <Image className={` ${index === 2 ? '' : ''}`} src={item?.image} alt="ecommerce" width={1000} height={1000} />

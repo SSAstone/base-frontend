@@ -39,7 +39,7 @@ export default function Products() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data?.data?.docs?.map((invoice: any) => (
+          {data?.docs?.map((invoice: any) => (
             <TableRow key={invoice._id}>
               <TableCell className="font-medium">{invoice._id}</TableCell>
               <TableCell className="">
@@ -59,13 +59,13 @@ export default function Products() {
         <TableFooter className="w-full">
           <TableRow>
             <TableCell><p>
-              Page {currentPage} of {data?.data?.totalDocs}
+              Page {currentPage} of {data?.totalDocs}
             </p></TableCell>
             <TableCell colSpan={4} className="text-right space-x-5">
-              <button className='btn' onClick={() => setCurrentPage(currentPage - 1)} disabled={!data?.data?.prevPage}>
+              <button className='btn' onClick={() => setCurrentPage(currentPage - 1)} disabled={!data?.prevPage}>
                 Prev Page
               </button>
-              <button className='btn' onClick={() => setCurrentPage(currentPage + 1)} disabled={!data?.data?.nextPage}>
+              <button className='btn' onClick={() => setCurrentPage(currentPage + 1)} disabled={!data?.nextPage}>
                 Next Page
               </button>
 

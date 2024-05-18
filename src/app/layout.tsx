@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import UserProvider from "@/providers/user_provider";
 import FetchProvider from "@/providers/fetch_provider";
+import { SocketProvider } from "@/providers/socket_provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,9 +21,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className} suppressHydrationWarning={true}>
         <FetchProvider>
-          <UserProvider>
-            {children}
-          </UserProvider>
+          <SocketProvider>
+            <UserProvider>
+              {children}
+            </UserProvider>
+          </SocketProvider>
         </FetchProvider>
       </body>
     </html>

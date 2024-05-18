@@ -4,10 +4,10 @@ import { useRouter } from 'next/navigation'
 import React from 'react'
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  const { data, isLoading } = useAuth()
+  const { user, isLoading } = useAuth()
     const router = useRouter()
 
-  if ( data?.data?.role === "user_service" || data?.data?.role !== "admin") {
+  if ( user?.role === "user_service" || user?.role !== "admin") {
     isLoading ? null : router.push('/')
   }
 

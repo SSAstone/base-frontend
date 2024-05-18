@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 import React from 'react'
 
 const Navbar = () => {
-    const { logout, data } = useAuth()
+    const { logout, user } = useAuth()
     const router = useRouter()
 
     const items: MenuProps['items'] = [
@@ -46,17 +46,21 @@ const Navbar = () => {
                         <h1 className='cursor-pointer'>Products</h1>
                     </Dropdown>
                     <h1>Features</h1>
-                    <h1>Pricing</h1>
+                    {/* <h1>Pricing</h1> */}
+                    <Link href="/messages">Messages</Link>
                     <h1>Resources</h1>
                 </div>
             </div>
             <div className="fi gap-6">
+                {
+                    user ? <h1>{user?.email}</h1> : <Link href="/dashboard">Dashboard</Link>
+                }
                 <Link href="/login">Login</Link>
                 {
-                    data?.data?.role === "user_service" && <Link href="/services">Get Started</Link>
+                    user?.role === "user_service" && <Link href="/services">Get Started</Link>
                 }
                 {
-                    data?.data?.role === "admin" && <Link href="/dashboard">Dashboard</Link>
+                    user?.role === "admin" && <Link href="/dashboard">Dashboard</Link>
                 }
                 <button className='cursor-pointer' onClick={() => {
                     router.push("/login")

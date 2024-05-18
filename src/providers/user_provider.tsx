@@ -1,7 +1,6 @@
 "use client"
 import { UserContext } from '@/context/user_context';
 import ApiFetcher from '@/hooks/use_fetch';
-import useFetch from '@/hooks/use_fetch';
 
 import React from 'react';
 
@@ -16,7 +15,7 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
         localStorage.removeItem("accessToken");
     }
 
-    const value = { data, isLoading, logout, refetch };
+    const value = { user: data?.data, isLoading, logout, refetch };
 
     return (
         <UserContext.Provider value={value}>

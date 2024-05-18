@@ -36,10 +36,10 @@ const items = [
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
 
-  const { data, isLoading } = useAuth()
+  const { user, isLoading } = useAuth()
     const router = useRouter()
 
-  if (data?.data?.role !== "admin") {
+  if (user?.role !== "admin") {
     isLoading ? null : router.push('/')
   }
 
