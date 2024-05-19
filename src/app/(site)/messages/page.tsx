@@ -13,7 +13,8 @@ const Page = () => {
   const [messages, setMessages] = useState([]) as any;
   const [active, setActive] = useState(false) as any;
   const [selectUser, setSelectUser] = useState({} as any);
-  const socket = useSocket();
+  const {socket, onlineUsers} = useSocket();
+  console.log("🚀 ~ Page ~ onlineUsers:", onlineUsers)
   const { user } = useAuth();
 
   useEffect(() => {
@@ -36,7 +37,7 @@ const Page = () => {
         });
       };
 
-      socket.on('message', handleMessage);
+      socket?.on('message', handleMessage);
 
       return () => {
         socket?.off('message', handleMessage);
@@ -76,13 +77,14 @@ const Page = () => {
               key={index}
               onClick={() => {
                 setMessages([]);
-                socket.emit('joinGroup', item._id);
+                socket?.emit('joinGroup', item._id);
                 setSelectUser(item);
                 fetchMessages(user?._id, item._id);
               }}
               className="p-3 flex items-center gap-3 cursor-pointer"
             >
-              <div className="rounded-full p-2 font-bold w-10 text-center text-xl bg-slate-400 text-white">
+              <div className="rounded-full p-2 font-bold w-10 text-center text-xl bg-slate-400 text-white relative">
+                { onlineUsers?.includes(item?._id) && <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-red-500"></div>}
                 {item?.username.slice(0, 2)}
               </div>
               <div>
@@ -110,7 +112,7 @@ const Page = () => {
                 content: values.message,
                 group: selectUser?._id || user?._id,
               };
-              socket.emit('sendMessage', newMessage);
+              socket?.emit('sendMessage', newMessage);
               setMessages((prevMessages: any) => [...prevMessages, { ...newMessage, _id: Date.now().toString() }]);
             }}
           >
@@ -122,14 +124,14 @@ const Page = () => {
         </Col>
 
       </Row>
-      <div className="absolute bottom-5 left-5">
+      {/* <div className="absolute bottom-5 left-5">
         <div onClick={() => setActive(false)} className="relative">
           { active && <div className="absolute -top-2 -right-2 w-4 h-4 rounded-full bg-red-600 -z-10"></div>}
           <h1 className='text-xl font-medium'>
             {user?.username}
           </h1>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

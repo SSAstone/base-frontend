@@ -1,25 +1,57 @@
 "use client"
+import { useAuth } from '@/context/user_context';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import io from 'socket.io-client';
+import { Socket, io } from 'socket.io-client';
 
 const SocketContext = createContext<any>(null);
 
 export const useSocket = () => useContext(SocketContext);
 
-export const SocketProvider = ({ children } : { children: React.ReactNode }) => {
-  const [socket, setSocket] = useState(null);
+interface User {
+  _id: string;
+}
+
+interface Props {
+  user: User | null;
+}
+
+
+export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
+  const [socket, setSocket] = useState<Socket<any> | null>(null);
+  const [onlineUsers, setOnlineUsers] = useState([] as any);
+
+  const { user } = useAuth();
+
+  // useEffect(() => {
+  //   const socketIo = io('http://localhost:5550') as any; // Backend URL
+  //   setSocket(socketIo);
+
+  //   return () => {
+  //     socketIo.disconnect();
+  //   };
+  // }, []);
 
   useEffect(() => {
-    const socketIo = io('http://localhost:5550') as any; // Backend URL
-    setSocket(socketIo);
+    if (user) {
+      const socketIo: Socket<any> = io('http://localhost:5550', {
+        query: {
+          userId: user._id
+        }
+      });
 
-    return () => {
-      socketIo.disconnect();
-    };
-  }, []);
+      socketIo.on('getOnlineUsers', (data: any) => {
+        console.log(data);
+        setOnlineUsers(data);
+      });
+      setSocket(socketIo);
+      return () => {
+        socketIo.close();
+      };
+    }
+  }, [user]);
 
   return (
-    <SocketContext.Provider value={socket}>
+    <SocketContext.Provider value={{socket, onlineUsers}}>
       {children}
     </SocketContext.Provider>
   );
