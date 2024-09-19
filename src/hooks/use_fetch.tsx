@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import instance from "./fetch";
+import instance from "./instance";
 import { message, notification } from "antd";
 import { getQueryClient } from "@/providers/fetch_provider";
 import { useState } from "react";

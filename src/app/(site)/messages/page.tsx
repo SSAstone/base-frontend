@@ -122,7 +122,6 @@ const Page = () => {
             <button type='submit'>Submit</button>
           </Form>
         </Col>
-
       </Row>
       {/* <div className="absolute bottom-5 left-5">
         <div onClick={() => setActive(false)} className="relative">

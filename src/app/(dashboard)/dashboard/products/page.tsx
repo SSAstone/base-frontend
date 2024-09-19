@@ -23,7 +23,7 @@ export default function Products() {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    getData({ page: currentPage, limit: '3' })
+    getData({ page: currentPage, limit: '10' })
   }, [currentPage])
 
   return (
